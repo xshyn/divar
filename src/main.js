@@ -1,0 +1,35 @@
+const express = require("express")
+const swaggerConfig = require("./config/swagger.config")
+const { allRoutes } = require("./routes")
+const { allExceptionHandler } = require("./common/exceptions/all-exceptions.handler")
+const { notFoundHandler } = require("./common/exceptions/not-found.handler")
+const cookieParser = require("cookie-parser")
+const expressEjsLayouts = require("express-ejs-layouts")
+const path = require("path")
+const moment = require("jalali-moment")
+const methodOverride = require("method-override")
+require("dotenv").config()
+
+async function main() {
+    const app = express()    
+    require("./config/mongoose.config")
+    app.use(express.json())
+    app.use(express.urlencoded({extended: true}))
+    app.use(cookieParser(process.env.COOKIE_SECRET_KEY))
+    app.use(express.static(path.join(__dirname, "public")))
+    app.use(expressEjsLayouts)
+    app.set('view engine' , 'ejs')
+    app.set("layout extractStyles" , true)
+    app.set("layout extractScripts" , true)
+    app.set('layout' , './layouts/panel/main.ejs')
+    app.locals.moment = moment
+    app.use(methodOverride("_method"))
+    app.use(allRoutes)
+    swaggerConfig(app)
+    app.use(notFoundHandler)
+    app.use(allExceptionHandler)
+    app.listen(process.env.PORT , () => {
+        console.log("listening on port 3000 http://localhost:3000");
+    })
+}
+main()

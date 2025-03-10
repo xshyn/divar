@@ -1,0 +1,75 @@
+<div class="col-lg-12 d-flex align-items-stretch">
+  <div class="card w-100">
+    <% if(showBack) { %>
+      <div class="p-3">
+        <a href="/post/create" class="btn btn-danger">بازگشت به همه دسته‌بندی ها</a>
+      </div>
+    <% } %>
+    <div class="p-3">
+      <% if(!options || options.length <= 0) { %>
+        <% if(categories && categories.length > 0){ %>
+          <ul>
+            <% categories.forEach(cat => { %>
+              <li>
+                <a
+                  href="/post/create?slug=<%= cat.slug %>"
+                  class="w-100 p-3 d-block bg-light text-dark">
+                  <span
+                    class="ti ti-<%= cat.icon %> nav-small-cap-icon fs-4"></span>
+                  <span><%= cat.name %></span>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      <% } else { %>
+        <form action="/post/create" method="post" enctype="multipart/form-data">
+          <input type="hidden" name="lat" id="lat">
+          <input type="hidden" name="lng" id="lng">
+          <input type="hidden" name="category" id="category" , value="<%=category._id%>">
+          <div class="p-2">
+            <label>انتخاب آدرس</label>
+            <div id="map-element" class="w-100" style="height: 300px;"></div>
+          </div>
+  
+          <div class="p-2">
+            <label>تصاویر آگهی</label>
+            <input type="file" name="images" multiple="multiple" class="form-control">
+          </div>
+  
+          <div class="p-2">
+            <label>عنوان آگهی</label>
+            <input type="text" name="title_post" placeholder="عنوان آگهی" class="form-control">
+          </div>
+          
+          <div class="p-2">
+            <label>توضیحات آگهی</label>
+            <textarea placeholder="توضیحات آگهی" name="content" class="form-control"></textarea>
+          </div>
+          <div class="p-2">
+            <label>قیمت جهت نمایش</label>
+            <input type="number" name="amount" placeholder="مبلغ" class="form-control">
+          </div>
+          
+          <% options.forEach(option => { %>
+            <label><%=option.title%><%=option.required?"*":""%></label>
+            <% if(option.type === "array"){ %>
+              <div class="p-2">
+                <select name="<%=option.title%>" class="form-select">
+                  <% option.enum.forEach(item => { %>
+                    <option value="<%=item%>"><%=item%></option>
+                  <% }) %>
+                </select>
+              </div>
+            <% } else { %>
+              <div class="p-2">
+                <input type="text" name="<%=option.title%>" class="form-control" placeholder="<%=option.guide%>">
+              </div>
+            <% } %>
+          <% }) %>
+          <button type="submit" class="btn btn-danger">انتشار</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>
